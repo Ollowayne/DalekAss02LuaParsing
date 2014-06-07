@@ -1,5 +1,5 @@
--- Lua reference @ http://www.lua.org/manual/5.2/manual.html#3.1
--- Lua Demo @ http://www.lua.org/cgi-bin/demo
+-- Lua reference manual @ http://www.lua.org/manual/5.2/manual.html#3.1
+-- Lua demo @ http://www.lua.org/cgi-bin/demo
 
 function exampleFunction(param1, param2, param3)
     if param1 then

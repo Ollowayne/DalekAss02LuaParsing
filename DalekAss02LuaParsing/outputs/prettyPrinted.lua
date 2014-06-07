@@ -1,4 +1,4 @@
---pretty printed Lua code--
+-- pretty printed Lua code
 
 
 function exampleFunction(param1, param2, param3)

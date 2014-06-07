@@ -53,11 +53,34 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 		this.out=System.out;
 	}
 	
+	// VISITOR HELPER (DEFAULT) 
+	
+	// default case for terminal print(c) or visit(c) to enhance readability
+	private void visitDefault(ParseTree c) {
+		if (c instanceof TerminalNodeImpl) {
+			out.print(c);
+		}
+		else {
+			visit(c);
+		}
+	}
+	
+	// default case for terminal print(c + SPACE) or visit(c) to enhance readability
+	private void visitDefaultSpaced(ParseTree c) {
+		if (c instanceof TerminalNodeImpl) {
+			out.print(c + SPACE);
+		}
+		else {
+			visit(c);
+		}
+	}
+	
+	
 	// VISITOR METHODS
 	
 	@Override
 	public Void visitChunk(ChunkContext ctx) {
-		out.print("--pretty printed Lua code--\n");
+		out.print("-- pretty printed Lua code\n");
 		
 		ParseTree c;
 		
@@ -81,12 +104,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 			return null;
 		
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c + SPACE);
-			}
-			else {
-				visit(c);
-			}
+			visitDefaultSpaced(c);
 		}
 		
 		decIndent();
@@ -122,12 +140,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	public Void visitRetstat(RetstatContext ctx) {
 		indent();
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c + SPACE);
-			}
-			else {
-				visit(c);
-			}
+			visitDefaultSpaced(c);
 		}
 		
 		newline();
@@ -137,12 +150,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitLabel(LabelContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c + SPACE);
-			}
-			else {
-				visit(c);
-			}
+			visitDefaultSpaced(c);
 		}
 		
 		return null;
@@ -151,12 +159,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitFuncname(FuncnameContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c);
-			}
-			else {
-				visit(c);
-			}
+			visitDefault(c);
 		}
 		
 		return null;
@@ -165,12 +168,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitVarlist(VarlistContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c + SPACE);
-			}
-			else {
-				visit(c);
-			}
+			visitDefaultSpaced(c);
 		}
 		
 		return null;
@@ -215,12 +213,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitExp(ExpContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c);
-			}
-			else {
-				visit(c);
-			}
+			visitDefault(c);
 		}
 		
 		return null;
@@ -229,12 +222,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitVar(VarContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-					out.print(c);
-			}
-			else {
-				visit(c);
-			}
+			visitDefault(c);
 		}
 		return null;
 	}
@@ -242,12 +230,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitPrefixexp(PrefixexpContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c);
-			}
-			else {
-				visit(c);
-			}
+			visitDefault(c);
 		}
 		
 		return null;
@@ -256,12 +239,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitFunctioncall(FunctioncallContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c);
-			}
-			else {
-				visit(c);
-			}
+			visitDefault(c);
 		}
 		
 		return null;
@@ -270,12 +248,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitArgs(ArgsContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c);
-			}
-			else {
-				visit(c);
-			}
+			visitDefault(c);
 		}
 		
 		return null;
@@ -284,12 +257,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitFunctiondef(FunctiondefContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c + SPACE);
-			}
-			else {
-				visit(c);
-			}
+			visitDefaultSpaced(c);
 		}
 		
 		return null;
@@ -298,12 +266,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitFuncbody(FuncbodyContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c);
-			}
-			else {
-				visit(c);
-			}
+			visitDefault(c);
 		}
 		
 		return null;
@@ -312,12 +275,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitParlist(ParlistContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c);
-			}
-			else {
-				visit(c);
-			}
+			visitDefault(c);
 		}
 		
 		return null;
@@ -348,12 +306,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	@Override
 	public Void visitFieldlist(FieldlistContext ctx) {
 		for (ParseTree c : ctx.children) {
-			if (c instanceof TerminalNodeImpl) {
-				out.print(c);
-			}
-			else {
-				visit(c);
-			}
+			visitDefault(c);
 		}
 		
 		return null;
