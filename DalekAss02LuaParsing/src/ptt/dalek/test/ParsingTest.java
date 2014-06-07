@@ -22,6 +22,7 @@ public class ParsingTest {
 	 * testNegative() error case, missing 'end' for function noLuaFunction()
 	 */
 	
+	
     private static String emptyFile =
         "inputs"
         + File.separator
