@@ -15,5 +15,6 @@ function exampleFunction(param1, param2, param3)
     end 
     io.write("\n\nAnd here's the ")
     io.write(param2)
-end
+end 
+
 exampleFunction(false, "parameter string", 0)
