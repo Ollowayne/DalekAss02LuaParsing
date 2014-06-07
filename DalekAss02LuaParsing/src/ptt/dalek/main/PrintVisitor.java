@@ -30,7 +30,6 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	
 	// ...et vice versa
 	private void decIndent() {
-
 		indent -= INDENT_FACTOR;
 	}
 	
@@ -80,13 +79,10 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 		}
 	}
 	
-	
 	// VISITOR METHODS
 	
 	@Override
 	public Void visitChunk(ChunkContext ctx) {
-		out.print("-- pretty printed Lua code\n");
-		
 		ParseTree c;
 		
 		// for all children except <EOF>
@@ -98,7 +94,6 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 				visit(c);
 			}
 		}
-		
 		return null;
 	}
 	
