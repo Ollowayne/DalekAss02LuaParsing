@@ -15,14 +15,7 @@ import ptt.dalek.antlr.LuaParser;
 import ptt.dalek.main.RenameVisitor;
 
 public class RenameVisitorExample {
-	
-	/* Pretty printing example
-	 * 
-	 * parses example lua file and
-	 * pretty prints to "outputs/prettyPrinted.lua", as well as system.out,
-	 * using PrintVisitor in both cases.
-	 */
-	
+
    private static String example =
             "inputs"
             + File.separator

@@ -106,12 +106,12 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 		blacklistEnabled = false;
 	}
 	
-	// adds name + rename to names, checks whether rename is a) valid lua name b) not blacklisted (as syntax token) 
+	// adds oldName + newName to names, checks whether newName is a) valid lua NAME b) not blacklisted (as syntax token) 
 	// if namecheck and blacklist are enambled
-	public void addName(String name, String rename) {
-		if(namecheckEnabled && rename.matches("([a-zA-Z]|_)([a-zA-Z]|[0-9]|_)*")) {
-			if(!blacklisted(rename)) {
-				names.put(name, rename);
+	public void addName(String oldName, String newName) {
+		if(namecheckEnabled && newName.matches("([a-zA-Z]|_)([a-zA-Z]|[0-9]|_)*")) {
+			if(!blacklisted(newName)) {
+				names.put(oldName, newName);
 			}
 		}
 	}
@@ -119,18 +119,18 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 	// adds HashMap to names
 	public void addNames(HashMap<String, String> names) {
 		for(Entry<String, String> entry : names.entrySet()) {
-		    String name = entry.getKey();
-		    String rename = entry.getValue();
+		    String oldName = entry.getKey();
+		    String newName = entry.getValue();
 		    
-		    addName(name, rename);
+		    addName(oldName, newName);
 		}
 	}
 	
-	// checks whether rename is element of blacklist (if check is enabled)
-	private boolean blacklisted(String rename) {
+	// checks whether newName is element of blacklist (if check is enabled)
+	private boolean blacklisted(String newName) {
 		if(blacklistEnabled) {
 			for(String s : blacklist) {
-				if(s.equals(rename)) {
+				if(s.equals(newName)) {
 					return true;
 				}
 			}
@@ -190,8 +190,8 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 		print("", c, "");
 	}
 	
-	private boolean checkName(String name) {
-		String t = names.get(name);
+	private boolean checkName(String oldName) {
+		String t = names.get(oldName);
 		return t != null;
 	}
 	
