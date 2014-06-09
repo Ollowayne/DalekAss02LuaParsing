@@ -71,6 +71,8 @@ exp
 	| unop exp ;
 
 /*
+note: this 
+
 var :
 	NAME | prefixexp '[' exp ']' | prefixexp '.' NAME ;
 

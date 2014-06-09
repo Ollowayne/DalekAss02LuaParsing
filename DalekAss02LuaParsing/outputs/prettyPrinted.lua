@@ -1,7 +1,6 @@
--- pretty printed Lua code
 
 
-function exampleFunction(param1, param2, param3)
+function anotherFunctionName(param1, param2, param3)
     if param1 then 
         io.write("\ncould be ")
         io.write("something")
@@ -17,4 +16,4 @@ function exampleFunction(param1, param2, param3)
     io.write(param2)
 end 
 
-exampleFunction(false, "parameter string", 0)
+anotherFunctionName(false, "parameter string", 0)
