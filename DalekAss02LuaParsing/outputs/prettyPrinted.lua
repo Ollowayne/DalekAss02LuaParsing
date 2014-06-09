@@ -1,7 +1,7 @@
 
 
-function anotherFunctionName(param1, param2, param3)
-    if param1 then 
+function anotherFunctionName(dickbutt, param2, param3)
+    if dickbutt then 
         io.write("\ncould be ")
         io.write("something")
     else 

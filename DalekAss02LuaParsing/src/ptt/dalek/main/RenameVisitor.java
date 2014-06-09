@@ -1,6 +1,8 @@
 package ptt.dalek.main;
 
 import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
@@ -12,14 +14,34 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 	public static final int INDENT_FACTOR = 4;
 	public static final String SPACE = " ";
 	
+	// blacklist contains all names, that can not be used
+	public static final String[] blacklist = {	"local", 
+												"function", 
+												"break", 
+												"goto", 
+												"do", 
+												"end", 
+												"while", 
+												"repeat", 
+												"until", 
+												"if", 
+												"then", 
+												"elseif", 
+												"else", 
+												"for", 
+												"in"
+												};
+	
+	
 	// HELPER METHODS
 	
 	private int indent = -4;
 	
-	private String name = "";
-	private String rename = "";
+	private HashMap<String, String> names = new HashMap<String, String>(); 
 	
 	private boolean renameEnabled = true;
+	private boolean blacklistEnabled = true;
+	private boolean namecheckEnabled = true;
 	
 	// prints #indent SPACE to output stream out
 	private void indent() {
@@ -42,7 +64,7 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 	private void newline() {
 		out.print("\n");
 	}
-
+	
 	// CONSTUCTOR
 	
 	PrintStream out;
@@ -57,17 +79,66 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 		this.out=System.out;
 	}
 	
-	public void setRenamer(String name, String rename) {
-		this.name = name;
-		this.rename = rename;
-		
+	// RENAMER STUFF
+	
+	public void setRenamer() {
 		this.renameEnabled = true;
 	}
 	
-	public void toggleRenamge() {
-		renameEnabled = !renameEnabled;
+	public void setRenamer(HashMap<String, String> names) {
+		addNames(names);
+		this.renameEnabled = true;
 	}
 	
+	public void disableBlacklist() {
+		blacklistEnabled = false;
+	}
+	
+	public void enableBlacklist() {
+		blacklistEnabled = true;
+	}
+	
+	public void disableNamecheck() {
+		blacklistEnabled = false;
+	}
+	
+	public void enableNamecheck() {
+		blacklistEnabled = false;
+	}
+	
+	// adds name + rename to names, checks whether rename is a) valid lua name b) not blacklisted (as syntax token) 
+	// if namecheck and blacklist are enambled
+	public void addName(String name, String rename) {
+		if(namecheckEnabled && rename.matches("([a-zA-Z]|_)([a-zA-Z]|[0-9]|_)*")) {
+			if(!blacklisted(rename)) {
+				names.put(name, rename);
+			}
+		}
+	}
+	
+	// adds HashMap to names
+	public void addNames(HashMap<String, String> names) {
+		for(Entry<String, String> entry : names.entrySet()) {
+		    String name = entry.getKey();
+		    String rename = entry.getValue();
+		    
+		    addName(name, rename);
+		}
+	}
+	
+	// checks whether rename is element of blacklist (if check is enabled)
+	private boolean blacklisted(String rename) {
+		if(blacklistEnabled) {
+			for(String s : blacklist) {
+				if(s.equals(rename)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	// VISITOR HELPER (DEFAULT) 
 	// note: default cases are not commented any further
 	
@@ -95,12 +166,12 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 		}
 	}
 	
-	// PRINT METHODS
+	// PRINT METHODS 
 	
 	// prints strings s1 and s2, as well as ParseTree c, while renaming content of c if it equals the specified name
 	private void print(String s1, ParseTree c, String s2) {
-		if(renameEnabled && c.getText().equals(name)) {
-			out.print(s1 + rename + s2);
+		if(renameEnabled && checkName(c.getText())) {
+			out.print(s1 + names.get(c.getText()) + s2);
 		}
 		else {
 			out.print(s1 + c + s2);
@@ -119,7 +190,18 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 		print("", c, "");
 	}
 	
+	private boolean checkName(String name) {
+		String t = names.get(name);
+		return t != null;
+	}
+	
+	
+	// +++
+	
 	// VISITOR METHODS
+	
+	// +++
+	
 	
 	@Override
 	public Void visitChunk(ChunkContext ctx) {

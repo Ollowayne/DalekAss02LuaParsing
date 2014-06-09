@@ -6,12 +6,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.HashMap;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import ptt.dalek.antlr.LuaParser;
-import ptt.dalek.main.PrintVisitor;
 import ptt.dalek.main.RenameVisitor;
 
 public class RenameVisitorExample {
@@ -49,16 +49,27 @@ public class RenameVisitorExample {
 			try {
 				PrintStream out;
 				
+				// hash map of names and renames
+				HashMap<String, String> names = new HashMap<String, String>();
+				names.put("exampleFunction", "anotherFunctionName");
+				names.put("param1", "dickbutt");
+					// note: this rename is not valid (no valid Lua name) and should not show up
+				names.put("param2", "1337");
+					// note: this rename is not valid (lua syntac token) and should not show up
+				names.put("param3", "then");
+				
 				// print to file outputs/prettyPrinted.lua
 				out = new PrintStream(output);
 				RenameVisitor p = new RenameVisitor(out);
-				p.setRenamer("exampleFunction", "anotherFunctionName");
+				// activates renamer and adds names to internal hash map
+				p.setRenamer(names);
+				// starts visit
 				p.visit(tree);
 				out.close();
 				
 				// print to system.out
 				RenameVisitor p2 = new RenameVisitor();
-				p2.setRenamer("exampleFunction", "anotherFunctionName");
+				p2.setRenamer(names);
 				p2.visit(tree);
 				
 				System.out.println("\n-- Lua Pretty printing finished!");
