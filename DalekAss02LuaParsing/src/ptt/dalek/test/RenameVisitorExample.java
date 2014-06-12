@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.HashMap;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -35,38 +34,20 @@ public class RenameVisitorExample {
 			parser.setBuildParseTree(true);
 			ParseTree tree = parser.chunk();
 			
-				// DEBUG prints tree.getText() to console
-				//TODO remove 
-			System.out.println("-- Lua parsing finished!\n" + tree.getText());
-			
 			try {
 				PrintStream out;
-				
-				// hash map of names and renames
-				HashMap<String, String> names = new HashMap<String, String>();
-				names.put("exampleFunction", "anotherFunctionName");
-				names.put("param1", "dickbutt");
-					// note: this rename is not valid (no valid Lua name) and should not show up
-				names.put("param2", "1337");
-					// note: this rename is not valid (lua syntac token) and should not show up
-				names.put("param3", "then");
-				
-				// print to file outputs/prettyPrinted.lua
 				out = new PrintStream(output);
 				RenameVisitor p = new RenameVisitor(out);
-				// activates renamer and adds names to internal hash map
-				p.setRenamer(names);
-				// starts visit
+				
+				p.addName("exampleFunction", "changedFunctionName");
+				p.addName("param1", "changedParam1");
+					// note: "1.21" is not valid (no valid Lua name) and should not show up
+				p.addName("param2", "1.21");
+					// note: "then" is not valid (blacklisted lua syntax token) and should not show up
+				p.addName("param3", "then");
+				
 				p.visit(tree);
 				out.close();
-				
-				// print to system.out
-				RenameVisitor p2 = new RenameVisitor();
-				p2.setRenamer(names);
-				p2.visit(tree);
-				
-				System.out.println("\n-- Lua Pretty printing finished!");
-				
 				
 			} catch (FileNotFoundException e) {
 				System.out.println("-- EXCEPTION: FILE NOT FOUND!");

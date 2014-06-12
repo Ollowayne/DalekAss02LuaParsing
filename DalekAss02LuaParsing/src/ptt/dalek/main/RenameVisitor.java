@@ -11,9 +11,6 @@ import ptt.dalek.antlr.LuaBaseVisitor;
 import ptt.dalek.antlr.LuaParser.*;
 
 public class RenameVisitor extends LuaBaseVisitor<Void>{
-	public static final int INDENT_FACTOR = 4;
-	public static final String SPACE = " ";
-	
 	// blacklist contains all names, that can not be used
 	public static final String[] blacklist = {	"local", 
 												"function", 
@@ -33,36 +30,46 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 												};
 	
 	
+	public int indentFactor = 4;
+	public String space = " ";
+	
 	// HELPER METHODS
 	
 	private int indent = -4;
 	
 	private HashMap<String, String> names = new HashMap<String, String>(); 
 	
-	private boolean renameEnabled = true;
 	private boolean blacklistEnabled = true;
 	private boolean namecheckEnabled = true;
 	
 	// prints #indent SPACE to output stream out
 	private void indent() {
 		for(int i = 0; i < indent; i++) {
-			out.print(SPACE);
+			out.print(space);
 		}
 	}
 	
 	// increments the indent by INDENT_FACTOR
 	private void incIndent() {
-		indent += INDENT_FACTOR;
+		indent += indentFactor;
 	}
 	
 	// ...et vice versa
 	private void decIndent() {
-		indent -= INDENT_FACTOR;
+		indent -= indentFactor;
 	}
 	
 	// prints newline to output stream out
 	private void newline() {
 		out.print("\n");
+	}
+	
+	public void setSpace(String s) {
+		space = s;
+	}
+	
+	public void setIndentFactor(int i) {
+		indentFactor = i;
 	}
 	
 	// CONSTUCTOR
@@ -81,19 +88,11 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 	
 	// RENAMER STUFF
 	
-	public void setRenamer() {
-		this.renameEnabled = true;
-	}
-	
-	public void setRenamer(HashMap<String, String> names) {
-		addNames(names);
-		this.renameEnabled = true;
-	}
-	
 	public void disableBlacklist() {
 		blacklistEnabled = false;
 	}
 	
+		// default: on
 	public void enableBlacklist() {
 		blacklistEnabled = true;
 	}
@@ -102,8 +101,9 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 		blacklistEnabled = false;
 	}
 	
+		// default: on
 	public void enableNamecheck() {
-		blacklistEnabled = false;
+		blacklistEnabled = true;
 	}
 	
 	// adds oldName + newName to names, checks whether newName is a) valid lua NAME b) not blacklisted (as syntax token) 
@@ -142,7 +142,7 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 	// VISITOR HELPER (DEFAULT) 
 	// note: default cases are not commented any further
 	
-	// default case for terminal print(c) or visit(c) to enhance readability
+	// default case for terminal print(c) or visit(c)
 	private void visitDefault(ParseTree c) {
 		//if terminal, print
 		if (c instanceof TerminalNodeImpl) {
@@ -154,11 +154,11 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 		}
 	}
 	
-	// default case for terminal print(c + SPACE) or visit(c) to enhance readability
+	// default case for terminal print(c + SPACE) or visit(c)
 	private void visitDefaultSpaced(ParseTree c) {
 		//if terminal, print
 		if (c instanceof TerminalNodeImpl) {
-			print(c, SPACE);
+			print(c, space);
 		}
 		// else visit children
 		else {
@@ -170,11 +170,11 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 	
 	// prints strings s1 and s2, as well as ParseTree c, while renaming content of c if it equals the specified name
 	private void print(String s1, ParseTree c, String s2) {
-		if(renameEnabled && checkName(c.getText())) {
+		if(checkName(c.getText())) {
 			out.print(s1 + names.get(c.getText()) + s2);
 		}
 		else {
-			out.print(s1 + c + s2);
+			out.print(s1 + c.getText() + s2);
 		}
 	}
 	
@@ -205,16 +205,10 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 	
 	@Override
 	public Void visitChunk(ChunkContext ctx) {
-		ParseTree c;
-		
+
 		// for all children except <EOF>
 		for (int i = 0; i < ctx.getChildCount() - 1; i++) {
-			if ((c = ctx.getChild(i)) instanceof TerminalNodeImpl) {
-				print(c, SPACE);
-			}
-			else {
-				visit(c);
-			}
+			visitDefaultSpaced(ctx.getChild(i));
 		}
 		return null;
 	}
@@ -248,18 +242,19 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 			if (c instanceof TerminalNodeImpl) {
 				if(c.getText().equals("=") | c.getText().equals("then") | c.getText().equals("do") | c.getText().equals("in")) {
 					// "=", "then", "do", "in" are surrounded by spaces
-					print(SPACE, c, SPACE);
+					print(space, c, space);
 				}
 				else if(c.getText().equals("function")) {
 					// function start in a new line
 					newline();
-					print(c, SPACE);
+					print(c, space);
 				}
 				else {
 					// other stats are spaced
-					print(c, SPACE);
+					print(c, space);
 				}
 			}
+			
 			else {
 				visit(c);
 			}
@@ -314,7 +309,7 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 			if (c instanceof TerminalNodeImpl) {
 				if(c.getText().equals(",")) {
 					// "," is the only terminal in namelist followed by space
-					print(c, SPACE);
+					print(c, space);
 				}
 				else {
 					print(c);
@@ -333,7 +328,7 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 			if (c instanceof TerminalNodeImpl) {
 				if(c.getText().equals(",")) {
 					// "," is the only terminal in explist followed by space
-					print(c, SPACE);
+					print(c, space);
 				}
 				else {
 					print(c);
@@ -400,7 +395,7 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 			if (c instanceof TerminalNodeImpl) {
 				if(c.getText().equals("end")) {
 					// end is followed by newline
-					print(c, SPACE);
+					print(c, space);
 					newline();
 				}
 				else {
@@ -431,7 +426,7 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 					print(c);
 				}
 				else {
-					print(c, SPACE);				
+					print(c, space);				
 				}
 			}
 			else {
@@ -455,7 +450,7 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 			if (c instanceof TerminalNodeImpl) {
 				if(c.getText().equals("=")) {
 					// "=" is the only terminal in field surrounded by spaces
-					print(SPACE, c, SPACE);
+					print(space, c, space);
 				}
 				else {
 					print(c);
@@ -472,7 +467,7 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 	public Void visitFieldsep(FieldsepContext ctx) {
 		for (ParseTree c : ctx.children) {
 			// fieldseps are followed by space
-			print(c, SPACE);
+			print(c, space);
 		}
 		return null;
 	}
@@ -481,7 +476,7 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 	public Void visitBinop(BinopContext ctx) {
 		for (ParseTree c : ctx.children) {
 			// binops are surrounded by spaces
-			print(SPACE, c, SPACE);
+			print(space, c, space);
 		}
 		return null;
 	}
@@ -491,10 +486,10 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 		for (ParseTree c : ctx.children) {
 			if(c.getText().equals("not")) {
 				// not is the only unop surrounded with spaces
-				print(SPACE, c, SPACE);
+				print(space, c, space);
 			}
 			else {
-				print(SPACE, c);
+				print(space, c);
 			}
 		}
 		return null;
