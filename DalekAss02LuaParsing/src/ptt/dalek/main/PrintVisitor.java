@@ -8,9 +8,9 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import ptt.dalek.antlr.LuaBaseVisitor;
 import ptt.dalek.antlr.LuaParser.*;
 
-public class PrintVisitor extends LuaBaseVisitor<Void>{
-	public static final int INDENT_FACTOR = 4;
-	public static final String SPACE = " ";
+public class PrintVisitor extends LuaBaseVisitor<Void> {	
+	private int indentFactor = 4;
+	private String space = " ";
 	
 	// HELPER METHODS
 	
@@ -19,25 +19,33 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	// prints #indent SPACE to output stream out
 	private void indent() {
 		for(int i = 0; i < indent; i++) {
-			out.print(SPACE);
+			out.print(space);
 		}
 	}
 	
 	// increments the indent by INDENT_FACTOR
 	private void incIndent() {
-		indent += INDENT_FACTOR;
+		indent += indentFactor;
 	}
 	
 	// ...et vice versa
 	private void decIndent() {
-		indent -= INDENT_FACTOR;
+		indent -= indentFactor;
 	}
 	
 	// prints newline to output stream out
 	private void newline() {
 		out.print("\n");
 	}
-
+	
+	public void setSpace(String s) {
+		space = s;
+	}
+	
+	public void setIndentFactor(int i) {
+		indentFactor = i;
+	}
+	
 	// CONSTUCTOR
 	
 	PrintStream out;
@@ -51,15 +59,15 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	public PrintVisitor() {
 		this.out=System.out;
 	}
-	
+
 	// VISITOR HELPER (DEFAULT) 
 	// note: default cases are not commented any further
 	
-	// default case for terminal print(c) or visit(c) to enhance readability
+	// default case for terminal print(c) or visit(c)
 	private void visitDefault(ParseTree c) {
 		//if terminal, print
 		if (c instanceof TerminalNodeImpl) {
-			out.print(c);
+			print(c);
 		}
 		// else visit children
 		else {
@@ -67,11 +75,11 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 		}
 	}
 	
-	// default case for terminal print(c + SPACE) or visit(c) to enhance readability
+	// default case for terminal print(c + SPACE) or visit(c)
 	private void visitDefaultSpaced(ParseTree c) {
 		//if terminal, print
 		if (c instanceof TerminalNodeImpl) {
-			out.print(c + SPACE);
+			print(c, space);
 		}
 		// else visit children
 		else {
@@ -79,20 +87,39 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 		}
 	}
 	
+	// PRINT METHODS 
+	
+	// prints strings s1 and s2, as well as ParseTree c
+	private void print(String s1, ParseTree c, String s2) {
+		out.print(s1 + c.getText() + s2);
+	}
+	
+	private void print(String s1, ParseTree c) {
+		print(s1, c, "");
+	}
+	
+	private void print(ParseTree c, String s2) {
+		print("", c, s2);
+	}
+	
+	private void print(ParseTree c) {
+		print("", c, "");
+	}
+	
+	
+	// +++
+	
 	// VISITOR METHODS
+	
+	// +++
+	
 	
 	@Override
 	public Void visitChunk(ChunkContext ctx) {
-		ParseTree c;
-		
+
 		// for all children except <EOF>
 		for (int i = 0; i < ctx.getChildCount() - 1; i++) {
-			if ((c = ctx.getChild(i)) instanceof TerminalNodeImpl) {
-				out.print(c.getText() + SPACE);
-			}
-			else {
-				visit(c);
-			}
+			visitDefaultSpaced(ctx.getChild(i));
 		}
 		return null;
 	}
@@ -126,18 +153,19 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 			if (c instanceof TerminalNodeImpl) {
 				if(c.getText().equals("=") | c.getText().equals("then") | c.getText().equals("do") | c.getText().equals("in")) {
 					// "=", "then", "do", "in" are surrounded by spaces
-					out.print(SPACE + c + SPACE);
+					print(space, c, space);
 				}
 				else if(c.getText().equals("function")) {
 					// function start in a new line
 					newline();
-					out.print(c + SPACE);
+					print(c, space);
 				}
 				else {
 					// other stats are spaced
-					out.print(c + SPACE);
+					print(c, space);
 				}
 			}
+			
 			else {
 				visit(c);
 			}
@@ -192,10 +220,10 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 			if (c instanceof TerminalNodeImpl) {
 				if(c.getText().equals(",")) {
 					// "," is the only terminal in namelist followed by space
-					out.print(c + SPACE);
+					print(c, space);
 				}
 				else {
-					out.print(c);
+					print(c);
 				}
 			}
 			else {
@@ -211,10 +239,10 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 			if (c instanceof TerminalNodeImpl) {
 				if(c.getText().equals(",")) {
 					// "," is the only terminal in explist followed by space
-					out.print(c + SPACE);
+					print(c, space);
 				}
 				else {
-					out.print(c);
+					print(c);
 				}
 			}
 			else {
@@ -278,11 +306,11 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 			if (c instanceof TerminalNodeImpl) {
 				if(c.getText().equals("end")) {
 					// end is followed by newline
-					out.print(c + SPACE);
+					print(c, space);
 					newline();
 				}
 				else {
-					out.print(c);
+					print(c);
 				}
 			}
 			else {
@@ -306,10 +334,10 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 			if (c instanceof TerminalNodeImpl) {
 				if(c.getText().equals("{") | c.getText().equals("}")) {
 					// "{" and "}" are the only terminals in tableconstructor not followed by space
-					out.print(c);
+					print(c);
 				}
 				else {
-					out.print(c + SPACE);				
+					print(c, space);				
 				}
 			}
 			else {
@@ -333,10 +361,10 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 			if (c instanceof TerminalNodeImpl) {
 				if(c.getText().equals("=")) {
 					// "=" is the only terminal in field surrounded by spaces
-					out.print(SPACE + c + SPACE);
+					print(space, c, space);
 				}
 				else {
-					out.print(c);
+					print(c);
 				}
 			}
 			else {
@@ -350,7 +378,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	public Void visitFieldsep(FieldsepContext ctx) {
 		for (ParseTree c : ctx.children) {
 			// fieldseps are followed by space
-			out.print(c + SPACE);
+			print(c, space);
 		}
 		return null;
 	}
@@ -359,7 +387,7 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 	public Void visitBinop(BinopContext ctx) {
 		for (ParseTree c : ctx.children) {
 			// binops are surrounded by spaces
-			out.print(SPACE + c + SPACE);
+			print(space, c, space);
 		}
 		return null;
 	}
@@ -369,10 +397,10 @@ public class PrintVisitor extends LuaBaseVisitor<Void>{
 		for (ParseTree c : ctx.children) {
 			if(c.getText().equals("not")) {
 				// not is the only unop surrounded with spaces
-				out.print(SPACE + c + SPACE);
+				print(space, c, space);
 			}
 			else {
-				out.print(SPACE + c);
+				print(space, c);
 			}
 		}
 		return null;

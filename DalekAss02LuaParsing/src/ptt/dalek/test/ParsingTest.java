@@ -13,15 +13,14 @@ import ptt.dalek.main.Parsing;
 
 public class ParsingTest {
 
-	/* Parsing test cases
-	 * 
-	 * testPositive1() tests with an empty file
-	 * testPositive2() tests with a short, easy to read lua example
-	 * testPositive3() tests a hole bunch of lua code
-	 * 
-	 * testNegative() error case, missing 'end' for function noLuaFunction()
-	 */
-	
+		/* Parsing test cases
+		 * 
+		 * testPositive1() tests with an empty file
+		 * testPositive2() tests with a short, easy to read lua example
+		 * testPositive3() tests a hole bunch of lua code
+		 * 
+		 * testNegative() error case, missing 'end' for function noLuaFunction()
+		 */
 	
     private static String emptyFile =
         "inputs"

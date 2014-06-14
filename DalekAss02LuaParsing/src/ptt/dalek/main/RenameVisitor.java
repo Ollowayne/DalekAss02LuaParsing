@@ -10,9 +10,10 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import ptt.dalek.antlr.LuaBaseVisitor;
 import ptt.dalek.antlr.LuaParser.*;
 
-public class RenameVisitor extends LuaBaseVisitor<Void>{
-	// blacklist contains all names, that can not be used
-	public static final String[] blacklist = {	"local", 
+public class RenameVisitor extends LuaBaseVisitor<Void> {
+	
+	// blacklist contains all names that can not be used
+	public static final String[] BLACKLIST = {	"local", 
 												"function", 
 												"break", 
 												"goto", 
@@ -30,8 +31,8 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 												};
 	
 	
-	public int indentFactor = 4;
-	public String space = " ";
+	private int indentFactor = 4;
+	private String space = " ";
 	
 	// HELPER METHODS
 	
@@ -106,7 +107,7 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 		blacklistEnabled = true;
 	}
 	
-	// adds oldName + newName to names, checks whether newName is a) valid lua NAME b) not blacklisted (as syntax token) 
+	// adds oldName + newName to names, checks whether newName is a) a valid lua NAME b) not blacklisted
 	// if namecheck and blacklist are enambled
 	public void addName(String oldName, String newName) {
 		if(namecheckEnabled && newName.matches("([a-zA-Z]|_)([a-zA-Z]|[0-9]|_)*")) {
@@ -129,7 +130,7 @@ public class RenameVisitor extends LuaBaseVisitor<Void>{
 	// checks whether newName is element of blacklist (if check is enabled)
 	private boolean blacklisted(String newName) {
 		if(blacklistEnabled) {
-			for(String s : blacklist) {
+			for(String s : BLACKLIST) {
 				if(s.equals(newName)) {
 					return true;
 				}

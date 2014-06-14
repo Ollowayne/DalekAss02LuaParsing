@@ -1,7 +1,7 @@
 
 
-function exampleFunction(param1, param2, param3)
-    if param1 then 
+function changedFunctionName(changedParam1, param2, param3)
+    if changedParam1 then 
         io.write("\nIf case reporting in. ")
         io.write("Sorry, no loop. ")
     else 
@@ -17,4 +17,4 @@ function exampleFunction(param1, param2, param3)
     io.write(param2)
 end 
 
-exampleFunction(false, "cool String parameter.'", 0)
+changedFunctionName(false, "cool String parameter.'", 0)
