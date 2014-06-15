@@ -16,11 +16,9 @@ import ptt.dalek.main.PrintVisitor;
 public class PrintVisitorExample {
 	
 	   /*
-	    * Example for pretty printing.
-	    * Prints to prettyPrinted.lua as well as system.out.
-	    * 	note: This is just an example. 
-	    * 	Correctness of resulting lua file is tested in ptt.dalek.test/RenameVisitorTest.
-	    *  
+	    * This is just an example, not the actual test case.
+	    * Test cases are hiding in ptt.dalek.test
+	    * 
 	    */
 	
    private static String example =

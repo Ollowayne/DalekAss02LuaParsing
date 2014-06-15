@@ -12,16 +12,16 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import ptt.dalek.antlr.LuaParser;
-import ptt.dalek.main.RenameVisitor;
+import ptt.dalek.main.PrintVisitor;
 
-public class RenameVisitorTest {
+public class PrintVisitorTest {
 
-		/* Rename visitor test case
+		/* print visitor test case
 		 * 
 		 * test() parses example2.lua
-		 * 	      renames and prints to testRenamed.lua
-		 *        parses testRenamed.lua and exampleRenamed.lua 
-		 *        compares resulting parse trees (text based)
+		 * 	      prints to testPrettyPrinted.lua
+		 *        parses testPrettyPrinted.lua and examplePrettyPrinted.lua 
+		 *        compares resulting parse trees
 		 *        
 		 */
 	
@@ -33,12 +33,12 @@ public class RenameVisitorTest {
     private static String renamed =
             "inputs"
             + File.separator
-            + "exampleRenamed.lua";
+            + "examplePrettyPrinted.lua";
     
     private static String testRenamed =
             "outputs"
             + File.separator
-            + "testRenamed.lua";
+            + "testPrettyPrinted.lua";
     
     @Test
     public void test() 
@@ -50,16 +50,9 @@ public class RenameVisitorTest {
 		parser.setBuildParseTree(true);
 		ParseTree tree = parser.chunk();
 		
-			// rename and print to testRenamed.lua
 		PrintStream out;
 		out = new PrintStream(testRenamed);
-		RenameVisitor p = new RenameVisitor(out);
-			p.addName("exampleFunction", "changedFunctionName");
-			p.addName("param1", "changedParam1");
-				// note: "1.21" is not valid (no valid Lua name) and should not show up
-			p.addName("param2", "1_21");
-				// note: "then" is not valid (blacklisted lua syntax token) and should not show up
-			p.addName("param3", "then");
+		PrintVisitor p = new PrintVisitor(out);
 		p.visit(tree);
 		out.close();
 

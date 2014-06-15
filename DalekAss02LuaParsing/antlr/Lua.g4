@@ -70,26 +70,13 @@ exp
 	| exp binop exp 
 	| unop exp ;
 
-/*
-note: this 
-
-var :
-	NAME | prefixexp '[' exp ']' | prefixexp '.' NAME ;
-
-prefixexp :
-	var | functioncall | '(' exp ')' ;
-
-functioncall :
-	prefixexp args | prefixexp ':' NAME args ;
-*/
-
 var 
 	: NAME | prefixexp '[' exp ']' | prefixexp '.' NAME 
 	;
 
 prefixexp 
-	: NAME | prefixexp '[' exp ']' | prefixexp '.' NAME		//var
-	| prefixexp args | prefixexp ':' NAME args				//functioncall
+	: NAME | prefixexp '[' exp ']' | prefixexp '.' NAME		// var
+	| prefixexp args | prefixexp ':' NAME args				// functioncall
 	| '(' exp ')' 
 	;
 
@@ -153,7 +140,6 @@ unop
 	| '#' 
 	;
 
-// multiline fehlt
 STRING   
 	: ('"' (~'"')* '"') 
 	| ('\'' (~'\'')* '\'') 
@@ -168,7 +154,6 @@ NUMBER
 	| HEXNUMBER 
 	;
 
-// unvollständig
 HEXNUMBER 
 	: '0' [xX] HEXDIGITS ('.' HEXDIGITS+)? ([pP] [-+]? DIGITS)? ;
 
@@ -195,7 +180,7 @@ fragment HEXDIGITS
 	: HEXDIGIT+ 
 	;
 
-// skip whitespace + comments
+		// skip whitespace + comments
 WS      
 	: (' '|'\r'? '\n'|'\t'|('--[[')(.)*?(']]')|('--')(.)*?('\n'))+ { skip(); }
 	;
