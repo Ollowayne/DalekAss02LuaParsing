@@ -32,7 +32,7 @@ stat
 	| 'local function' NAME funcbody
 	| 'local' namelist ('=' explist)? 
 	;
- 
+
 retstat 
 	: 'return' explist? (';')? 
 	;
